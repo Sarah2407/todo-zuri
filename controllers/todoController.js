@@ -1,8 +1,5 @@
 let Task = require("../models/task");
 
-const { v4: uuidv4 } = require('uuid');
-
-
 const tasks = async (req, res) => {
     const tasks = await Task.find();
     console.log(tasks);
