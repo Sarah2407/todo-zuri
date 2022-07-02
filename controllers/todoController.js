@@ -1,37 +1,41 @@
-let allTasks = require("../models/task");
+let Task = require("../models/task");
 
 const { v4: uuidv4 } = require('uuid');
 
 
-const tasks = (req, res) => {
-    console.log(allTasks)
-    res.send(allTasks);
+const tasks = async (req, res) => {
+    const tasks = await Task.find();
+    console.log(tasks);
+    res.json(tasks);
 }
 
-const newTask = (req, res) => {
-    const task = req.body;
-    const taskWithId = {...task, id: uuidv4()}
-    allTasks.push(taskWithId);
+const newTask = async (req, res) => {
+    const task = new Task({
+        title: req.body.title,
+        description: req.body.description,
+    });
+
+    const newTask = await task.save()
+    .then(`Task with title ${task.title} added`)
+    .catch(error => {
+        res.json({message: error})
+    })
+
     res.send(`Task with title ${task.title} added`);
 }
 
-const updateTask = (req, res) => {
-    const id = req.params.id;
-    const { title, description, date } = req.body;
+const updateTask = async (req, res) => {
+    const updatedTask = await Task.updateOne(
+        {_id: req.params.id},
+        {$set: {title: req.body.title}}
+    );
 
-    const task = allTasks.find((task) => task.id === id);
-
-    if (title) task.title = title;
-    if (description) task.description = description;
-    if (date) task.date = date;
-
-    res.send(`Task with id ${id} updated`);
+    res.send(updatedTask);
 }
 
-const deleteTask = (req, res) => {
-    const id = req.params.id;
-    allTasks = allTasks.filter((task) => task.id !== id);
-    res.send(`Task with id ${id} removed`);
+const deleteTask = async (req, res) => {
+    await Task.deleteOne({_id: req.params.id});
+    res.send(`One task removed`);
 }
 
 

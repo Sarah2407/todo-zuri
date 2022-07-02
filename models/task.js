@@ -1,9 +1,15 @@
-const allTasks = [
-    {
-        title: "Cook",
-        description: "Prepare jolof rice with chucken",
-        date: "20th May"
-    }
-];
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-module.exports = allTasks;
+const todoSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+}, {timestamps: true});
+
+module.exports = mongoose.model("todo-express", todoSchema);
